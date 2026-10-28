@@ -28,7 +28,7 @@ In the managed cloud workspace, use `npm ci --cache /tmp/aether-npm` if the defa
 
 Start with **Sreshta**, **Laasya**, **Everyone**, or **Add Profile**. Each profile has a different backdrop. Sreshta, Laasya, and Everyone have distinct sample viewing histories and recommendations, while all profiles share the same seven pinned apps.
 
-Select a profile → browse Continue Watching → inspect content details → open an animated artwork preview → return to the same card. Explore Your Apps, For You, and Games with Up/Down. Search and settings live in the top-right controls; the profile avatar returns to profile selection.
+Select a profile → browse Continue Watching → inspect content details → open an animated artwork preview → return to the same card. Continue Watching, Your Apps, For You, and Games are stacked on one continuous Home page. Scroll with a mouse/trackpad or use Up/Down to focus and reveal each row; Left/Right moves within a row. Search and settings live in the top-right controls; the profile avatar returns to profile selection.
 
 Search supports both a remote-controlled on-screen keyboard and physical typing. Back from search details restores the search query and focused result. Settings persist reduced-motion and clock-format preferences locally. New profiles and the simulated Wi-Fi state last for the current session.
 
@@ -43,8 +43,8 @@ The sample titles are deliberately fictional rather than attaching unrelated art
 - **Canvas:** 1920 × 1080, 90 px horizontal safe margins; proportional scaling and letterboxing.
 - **Surfaces:** dark slate, restrained translucent glass, blurred backgrounds, thin specular highlights.
 - **Typography:** system sans-serif with editorial serif artwork treatments; 76–86 px hero titles.
-- **Focus:** brighter glass, slight scale/depth, a single reflection sweep. Circular profiles receive one orbiting highlight.
-- **Motion:** approximately 350–450 ms focus response, 850 ms profile entry, 900 ms image crossfade. Reduced motion removes decorative transitions.
+- **Focus:** brighter glass, depth, and a single reflection sweep; app and content tiles do not scale. Circular profiles receive one orbiting highlight without scaling on focus. Only clicking/selecting a profile uses a zoom to enter Home.
+- **Motion:** approximately 350–450 ms focus response, 850 ms profile entry, 650 ms image crossfade. App/content previews and panels fade without zoom or panning. Reduced motion removes decorative transitions.
 - **Reusable UI:** profile orbs, icon controls, cinematic content cards, app tiles, progress bars, modal panels, keyboard keys, and setting rows.
 
 ## Validate

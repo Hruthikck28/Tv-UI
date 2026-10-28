@@ -288,13 +288,13 @@ function profileContent() {
     }));
   return content;
 }
-function items() {
+function items(section = state.section) {
   const personal = profileContent();
-  return state.section === 1
+  return section === 1
     ? apps
-    : state.section === 3
+    : section === 3
       ? games
-      : state.section === 2
+      : section === 2
         ? [personal[2], personal[0], personal[1], personal[3]]
         : personal;
 }
@@ -311,15 +311,37 @@ function hero() {
     isGame = state.section === 3;
   return `<div class="hero" key="${x.id || x.name}"><div class="hero-eyebrow"><span class="line"></span>${isApp ? "ALL YOUR FAVORITES. ONE PLACE." : x.tag}</div><h1>${isApp ? `A little more<br>of what you love.` : x.title.replace(", ", ",<br>")}</h1><div class="hero-meta"><span class="provider">${isApp ? x.name : x.provider}</span><span class="meta-dot">·</span><span>${isApp ? "Shared on every profile" : x.genre}</span>${!isApp && !isGame ? `<span class="rating">${x.rating}</span><span>4K</span>` : ""}</div><p class="hero-description">${isApp ? `Your ${x.name} favorites are right here. Pick up a story, discover something new, and make an evening of it.` : x.desc}</p><div class="hero-action">${icon(isGame ? "game" : "play")}<span>${isApp ? "Open " + x.name : isGame ? "Play " + x.short : state.section === 0 ? "Resume " + x.short : "Discover " + x.short}</span><kbd>↵</kbd><span class="action-note">${state.section === 0 ? x.left : isGame ? "Sample game preview" : isApp ? "Same apps. Every profile." : "Picked for " + esc(profiles[state.profile].name)}</span></div></div><div class="ambient-caption"><span>${isApp ? "YOUR PINNED COLLECTION" : isGame ? "A MOMENT TO PLAY" : "AETHER EDITORIAL"}</span><i></i>${isApp ? "A world of entertainment" : isGame ? "Adventure is calling" : "Extraordinary, in every direction"}</div>`;
 }
-function card(x, i) {
-  const active = state.zone === "rail" && state.index === i;
-  if (state.section === 1)
-    return `<button class="app-card ${x.class} ${active ? "focused" : ""}" data-card="${i}" aria-label="Open ${x.name}" ${active ? 'data-active="true"' : ""}><span class="app-logo">${x.class === "youtube" ? '<span class="youtube-play">▶</span>' : x.class === "apple" ? '<span class="apple-dot">●</span>' : ""}${x.logo}</span><span class="tile-shine"></span><span class="app-caption">${x.name}</span></button>`;
-  return `<button class="content-card ${active ? "focused" : ""}" data-card="${i}" aria-label="${esc(x.short)}${x.progress ? ", " + x.progress + "% watched" : ""}" ${active ? 'data-active="true"' : ""}><div class="card-image" style="background-image:url('${art(x.art)}')"><span class="card-provider">${x.provider === "Games" ? icon("game") : x.provider}</span><div class="card-art-title ${x.id === "orbit" || x.id === "lunar" ? "spaced" : ""}">${x.short}</div><span class="tile-shine"></span>${state.section === 0 ? `<div class="progress-track"><span style="width:${x.progress}%"></span></div>` : ""}<span class="card-play">${icon(state.section === 3 ? "game" : "play")}</span></div><div class="card-info"><span>${x.short}</span><span>${state.section === 0 ? x.left : state.section === 3 ? "Play now" : x.provider}</span></div><div class="card-subtitle">${state.section === 0 ? x.episode : x.genre}</div></button>`;
+function card(x, i, section) {
+  const active =
+    state.zone === "rail" && state.section === section && state.index === i;
+  if (section === 1)
+    return `<button class="app-card ${x.class} ${active ? "focused" : ""}" data-card="${i}" data-row="${section}" aria-label="Open ${x.name}" ${active ? 'data-active="true"' : ""}><span class="app-logo">${x.class === "youtube" ? '<span class="youtube-play">▶</span>' : x.class === "apple" ? '<span class="apple-dot">●</span>' : ""}${x.logo}</span><span class="tile-shine"></span><span class="app-caption">${x.name}</span></button>`;
+  return `<button class="content-card ${active ? "focused" : ""}" data-card="${i}" data-row="${section}" aria-label="${esc(x.short)}${x.progress ? ", " + x.progress + "% watched" : ""}" ${active ? 'data-active="true"' : ""}><div class="card-image" style="background-image:url('${art(x.art)}')"><span class="card-provider">${x.provider === "Games" ? icon("game") : x.provider}</span><div class="card-art-title ${x.id === "orbit" || x.id === "lunar" ? "spaced" : ""}">${x.short}</div><span class="tile-shine"></span>${section === 0 ? `<div class="progress-track"><span style="width:${x.progress}%"></span></div>` : ""}<span class="card-play">${icon(section === 3 ? "game" : "play")}</span></div><div class="card-info"><span>${x.short}</span><span>${section === 0 ? x.left : section === 3 ? "Play now" : x.provider}</span></div><div class="card-subtitle">${section === 0 ? x.episode : x.genre}</div></button>`;
 }
 function renderHome() {
   backdrop(selected().art);
-  return `<section class="home-screen">${header()}${hero()}<section class="shelf"><nav class="section-nav" aria-label="Content sections">${sections.map((name, i) => `<button data-section="${i}" class="section-tab ${state.section === i ? "active" : ""}" aria-current="${state.section === i ? "page" : "false"}">${i === 0 ? '<span class="section-dot"></span>' : ""}${name}${i === 0 ? '<span class="count">4</span>' : ""}</button>`).join("")}<span class="shelf-context">${state.section === 0 ? "Pick up where you left off" : state.section === 1 ? "Pinned for everyone" : state.section === 2 ? "Picked for " + esc(profiles[state.profile].name) : "A little adventure awaits"} ${icon("arrow")}</span></nav><div class="rail-viewport"><div class="rail ${state.section === 1 ? "apps-rail" : ""}" style="transform:translateX(-${state.section === 1 ? Math.max(0, state.index - 5) * 250 : Math.max(0, state.index - 2) * 445}px)">${items().map(card).join("")}</div></div></section><div class="home-bottom"><span class="section-counter">0${state.section + 1}<span> / 04</span></span><span class="browse-hint">↑ ↓ <span>Explore your world</span></span><span class="sample-badge">SAMPLE COLLECTION</span></div>${remoteHint()}</section>`;
+  const descriptions = [
+    "Pick up where you left off",
+    "Pinned for everyone",
+    "Picked for " + esc(profiles[state.profile].name),
+    "A little adventure awaits",
+  ];
+  return `<section class="home-screen">${header()}<div class="home-feed" aria-label="Home content"><div class="hero-area">${hero()}</div>${sections
+    .map((name, section) => {
+      const index = state.section === section ? state.index : 0;
+      const shift =
+        section === 1
+          ? Math.max(0, index - 5) * 250
+          : Math.max(0, index - 2) * 445;
+      return `<section class="shelf ${state.section === section ? "current-row" : ""}" data-shelf="${section}" aria-labelledby="section-${section}"><div class="section-heading"><h2 id="section-${section}">${name}</h2><span class="shelf-context">${descriptions[section]}</span></div><div class="rail-viewport"><div class="rail ${section === 1 ? "apps-rail" : ""}" style="transform:translateX(-${shift}px)">${items(
+        section,
+      )
+        .map((x, i) => card(x, i, section))
+        .join("")}</div></div></section>`;
+    })
+    .join(
+      "",
+    )}<p class="feed-end">Your world. All in one place.</p></div>${remoteHint()}</section>`;
 }
 const keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").concat(["SPACE", "⌫"]);
 function keyboard(value, mode) {
@@ -409,7 +431,8 @@ function modal() {
   }
   return `<div class="modal-backdrop"><section class="modal ${state.modal}-modal" role="dialog" aria-modal="true" aria-label="${state.modal === "detail" || state.modal === "player" ? esc(state.detail.short) : heading}" tabindex="-1"><button class="modal-back" data-close aria-label="Back">${icon("back")}<span>Back</span><kbd>esc</kbd></button>${body}</section></div>`;
 }
-function render() {
+function render(ensureVisible = false) {
+  const scrollTop = app.querySelector(".home-feed")?.scrollTop || 0;
   document
     .querySelector("#stage")
     .classList.toggle("reduced-motion", state.reduced);
@@ -418,6 +441,26 @@ function render() {
   const scope = state.modal ? app.querySelector(".modal") : app;
   const active = scope.querySelector("[data-active]");
   if (active) active.focus({ preventScroll: true });
+  const feed = app.querySelector(".home-feed");
+  if (feed) {
+    feed.scrollTop = scrollTop;
+    if (ensureVisible && !state.modal) {
+      const row = feed.querySelector(`[data-shelf="${state.section}"]`);
+      const top = row.offsetTop;
+      const bottom = top + row.offsetHeight;
+      if (state.zone === "controls")
+        feed.scrollTo({
+          top: 0,
+          behavior: state.reduced ? "instant" : "smooth",
+        });
+      else if (top < scrollTop || bottom > scrollTop + feed.clientHeight) {
+        feed.scrollTo({
+          top: state.section === 0 ? 0 : top - 20,
+          behavior: state.reduced ? "instant" : "smooth",
+        });
+      }
+    }
+  }
 }
 function openModal(name) {
   detailOrigin = null;
@@ -495,12 +538,6 @@ function selectControl() {
     render();
   } else openModal(["wifi", "search", "settings"][state.control]);
 }
-function setSection(index) {
-  state.section = index;
-  state.index = 0;
-  state.zone = "rail";
-  render();
-}
 function typeKey(key) {
   const field = state.modal === "add" ? "addName" : "query";
   if (key === "⌫") state[field] = state[field].slice(0, -1);
@@ -567,6 +604,7 @@ app.addEventListener("click", (e) => {
     state.profileFocus = +b.dataset.profile;
     enterProfile();
   } else if (b.dataset.card !== undefined) {
+    state.section = +b.dataset.row;
     state.index = +b.dataset.card;
     state.zone = "rail";
     selectCard();
@@ -574,8 +612,7 @@ app.addEventListener("click", (e) => {
     state.control = +b.dataset.control;
     state.zone = "controls";
     selectControl();
-  } else if (b.dataset.section !== undefined) setSection(+b.dataset.section);
-  else if (b.hasAttribute("data-close")) closeModal();
+  } else if (b.hasAttribute("data-close")) closeModal();
   else if (b.dataset.key !== undefined) {
     state.searchIndex = +b.dataset.key;
     state.searchRow = 0;
@@ -617,8 +654,11 @@ app.addEventListener("pointerover", (e) => {
     changed = true;
   } else if (
     b.dataset.card !== undefined &&
-    (state.index !== +b.dataset.card || state.zone !== "rail")
+    (state.section !== +b.dataset.row ||
+      state.index !== +b.dataset.card ||
+      state.zone !== "rail")
   ) {
+    state.section = +b.dataset.row;
     state.index = +b.dataset.card;
     state.zone = "rail";
     changed = true;
@@ -807,7 +847,7 @@ addEventListener("keydown", (e) => {
       return;
     }
   }
-  render();
+  render(true);
 });
 setInterval(() => {
   const c = clock();

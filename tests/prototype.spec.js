@@ -46,7 +46,7 @@ test("all four rails support remote focus, previews, and selection", async ({
   await press(page, "ArrowRight");
   await expect(page.locator(".hero h1")).toContainText("A world beneath.");
   await press(page, "ArrowDown");
-  await expect(page.locator(".section-tab.active")).toHaveText("Your Apps");
+  await expect(page.locator(".current-row h2")).toHaveText("Your Apps");
   for (let i = 0; i < 6; i++) await press(page, "ArrowRight");
   await expect(
     page.getByRole("button", { name: "Open Sony LIV", exact: true }),
@@ -54,7 +54,7 @@ test("all four rails support remote focus, previews, and selection", async ({
   await press(page, "Enter");
   await expect(page.getByRole("dialog")).toContainText("Sony LIV");
   await press(page, "Escape", "ArrowDown");
-  await expect(page.locator(".section-tab.active")).toHaveText("For You");
+  await expect(page.locator(".current-row h2")).toHaveText("For You");
   await press(page, "ArrowDown", "ArrowRight", "Enter");
   await expect(page.getByRole("dialog")).toContainText("Tides");
   await press(page, "Enter");
@@ -223,4 +223,73 @@ test("Tab-selected Back control can be activated with Enter", async ({
   await page.getByRole("button", { name: "Back", exact: true }).focus();
   await press(page, "Enter");
   await expect(page.locator(".modal")).toHaveCount(0);
+});
+
+test("Home has four stacked sections and scrolls with wheel and remote", async ({
+  page,
+}) => {
+  await home(page);
+  await expect(page.locator(".section-tab")).toHaveCount(0);
+  await expect(page.locator(".home-feed .shelf")).toHaveCount(4);
+  const headings = await page.locator(".section-heading h2").allTextContents();
+  expect(headings).toEqual([
+    "Continue Watching",
+    "Your Apps",
+    "For You",
+    "Games",
+  ]);
+  const feed = page.locator(".home-feed");
+  await feed.hover({ position: { x: 1500, y: 400 } });
+  await page.mouse.wheel(0, 650);
+  await expect
+    .poll(() => feed.evaluate((el) => el.scrollTop))
+    .toBeGreaterThan(300);
+  await press(page, "ArrowDown", "ArrowDown", "ArrowDown");
+  await expect(page.locator(".current-row h2")).toHaveText("Games");
+  await expect(page.locator(".content-card.focused")).toBeInViewport();
+  await page.waitForTimeout(600);
+  const before = await feed.evaluate((el) => el.scrollTop);
+  await press(page, "Enter", "Escape");
+  expect(await feed.evaluate((el) => el.scrollTop)).toBeCloseTo(before, 0);
+  await press(page, "ArrowUp", "ArrowUp", "ArrowUp");
+  await expect(page.locator(".current-row h2")).toHaveText("Continue Watching");
+  await expect.poll(() => feed.evaluate((el) => el.scrollTop)).toBe(0);
+});
+
+test("app and content transitions fade without zoom", async ({ page }) => {
+  await home(page);
+  await expect(page.locator(".content-card.focused")).toHaveCSS(
+    "transform",
+    "none",
+  );
+  await press(page, "ArrowDown");
+  await expect(page.locator(".app-card.focused")).toHaveCSS(
+    "transform",
+    "none",
+  );
+  await expect(page.locator(".backdrop").last()).toHaveCSS("transform", "none");
+  await press(page, "Enter");
+  await expect(page.locator(".modal")).toHaveCSS("animation-name", "fade-in");
+  await press(page, "Enter");
+  await expect(page.locator(".player-art")).toHaveCSS("animation-name", "none");
+});
+
+test("zoom is reserved for profile selection, not navigation focus", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator(".profile.focused .orb")).toHaveCSS(
+    "transform",
+    "none",
+  );
+  await press(page, "ArrowRight");
+  await expect(page.locator(".profile.focused .orb")).toHaveCSS(
+    "transform",
+    "none",
+  );
+  await press(page, "Enter");
+  await expect(page.locator(".profile-screen")).toHaveClass(/entering/);
+  await expect(page.locator(".home-screen")).toBeVisible();
+  await press(page, "ArrowUp");
+  await expect(page.locator(".control.focused")).toHaveCSS("transform", "none");
 });

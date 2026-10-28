@@ -63,7 +63,7 @@ button:focus-visible:not(.focused) {
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transform: scale(1.045);
+  transform: none;
   transition:
     opacity 0.9s ease,
     transform 8s ease;
@@ -71,7 +71,7 @@ button:focus-visible:not(.focused) {
 }
 .backdrop.visible {
   opacity: 1;
-  transform: scale(1);
+  transform: none;
 }
 .shade {
   background:
@@ -293,7 +293,7 @@ button:focus-visible:not(.focused) {
   transition: opacity 0.4s;
 }
 .profile.focused .orb {
-  transform: scale(1.09) translateY(-6px);
+  transform: none;
   filter: brightness(1.18);
   box-shadow:
     inset 0 2px 4px #ffffff70,
@@ -394,13 +394,13 @@ button:focus-visible:not(.focused) {
   transition: opacity 0.5s;
 }
 .entering .profile.selected .orb {
-  transform: scale(1.35);
+  transform: none;
   filter: brightness(1.5);
   box-shadow: 0 0 150px #ffffff40;
 }
 .entering {
   opacity: 0;
-  transform: scale(1.06);
+  transform: none;
   transition-delay: 0.18s;
 }
 .home-screen {
@@ -477,7 +477,7 @@ button:focus-visible:not(.focused) {
 }
 .control.focused {
   background: #ffffff25;
-  transform: scale(1.13);
+  transform: none;
   box-shadow:
     inset 0 1px 2px #ffffff66,
     0 0 25px #ffffff1a;
@@ -506,7 +506,7 @@ button:focus-visible:not(.focused) {
 }
 .mini-profile.focused {
   box-shadow: 0 0 30px #fff4;
-  transform: scale(1.13);
+  transform: none;
   border-color: #ffffffaa;
 }
 .hero {
@@ -702,7 +702,7 @@ button:focus-visible:not(.focused) {
   transform-origin: center 65%;
 }
 .content-card.focused {
-  transform: scale(1.035);
+  transform: none;
   filter: brightness(1);
 }
 .card-image {
@@ -842,7 +842,7 @@ button:focus-visible:not(.focused) {
   backdrop-filter: blur(30px);
 }
 .app-card.focused {
-  transform: scale(1.06) translateY(-3px);
+  transform: none;
   background: linear-gradient(135deg, #ffffff28, #ffffff0b);
   border-color: #ffffff65;
   box-shadow:
@@ -1067,7 +1067,7 @@ button:focus-visible:not(.focused) {
   background: #e4eded;
   color: #1b2b36;
   box-shadow: 0 4px 20px #dce9ee18;
-  transform: scale(1.03);
+  transform: none;
 }
 .results-heading {
   display: flex;
@@ -1152,7 +1152,7 @@ button:focus-visible:not(.focused) {
   color: #1d2a35;
   border-color: #fff8;
   box-shadow: 0 8px 35px #d6e7ed1c;
-  transform: scale(1.025);
+  transform: none;
 }
 .secondary {
   background: none;
@@ -1467,11 +1467,11 @@ button:focus-visible:not(.focused) {
 @keyframes arrive {
   from {
     opacity: 0;
-    transform: scale(1.035);
+    transform: none;
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: none;
   }
 }
 @keyframes hero-in {
@@ -1495,11 +1495,11 @@ button:focus-visible:not(.focused) {
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: none;
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: none;
   }
 }
 @keyframes blink {
@@ -1509,10 +1509,10 @@ button:focus-visible:not(.focused) {
 }
 @keyframes slow-pan {
   from {
-    transform: scale(1);
+    transform: none;
   }
   to {
-    transform: scale(1.12) translateX(1%);
+    transform: none;
   }
 }
 .reduced-motion *,
@@ -1557,4 +1557,110 @@ button:focus-visible:not(.focused) {
   width: 17px;
   margin-left: 14px;
   vertical-align: -4px;
+}
+
+/* Home is one continuous feed; headings are labels, never navigation tabs. */
+.home-screen {
+  animation: none;
+}
+.home-feed {
+  position: absolute;
+  top: 170px;
+  bottom: 86px;
+  left: 66px;
+  right: 60px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff30 transparent;
+  padding: 0 30px 0 24px;
+}
+.hero-area {
+  position: relative;
+  height: 472px;
+}
+.hero-area .hero {
+  left: 5px;
+  top: 55px;
+}
+.hero-area .ambient-caption {
+  right: 0;
+  top: 315px;
+}
+.home-feed .shelf {
+  position: relative;
+  inset: auto;
+  margin-bottom: 42px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding-right: 8px;
+}
+.section-heading h2 {
+  font-size: 27px;
+  font-weight: 400;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+.home-feed .rail-viewport {
+  padding-bottom: 22px;
+}
+.home-feed .apps-rail {
+  padding-bottom: 38px;
+}
+.feed-end {
+  text-align: center;
+  color: #8297a4;
+  font-size: 17px;
+  letter-spacing: 1px;
+  padding: 15px 0 40px;
+}
+.home-feed .content-card:not(.focused) {
+  filter: brightness(0.85);
+}
+.home-header {
+  z-index: 2;
+}
+/* App/content browsing uses fades, with no zoom or panning. */
+.backdrop,
+.backdrop.visible {
+  transform: none;
+  transition: opacity 0.65s ease;
+}
+.hero {
+  animation: fade-in 0.35s both;
+}
+.content-card,
+.content-card.focused,
+.app-card,
+.app-card.focused {
+  transform: none;
+  transition:
+    filter 0.3s,
+    background 0.3s,
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+.modal {
+  animation: fade-in 0.3s both;
+}
+.player-art {
+  animation: none;
+  transform: none;
+}
+.primary.focused,
+.primary:hover {
+  transform: none;
+}
+
+/* The only zoom is the explicitly selected profile entering Home. */
+.entering .profile.selected .orb {
+  transform: scale(1.35);
+}
+.entering {
+  transform: scale(1.06);
 }
