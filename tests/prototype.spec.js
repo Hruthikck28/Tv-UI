@@ -89,7 +89,7 @@ test("search works with typed text, remote results, and empty results", async ({
   page,
 }) => {
   await home(page);
-  await press(page, "ArrowUp", "ArrowRight", "Enter");
+  await press(page, "ArrowUp", "Enter");
   await expect(page.getByRole("dialog")).toContainText(
     "Find your next favorite.",
   );
@@ -159,7 +159,7 @@ test("Wi-Fi simulation updates status without blocking browsing", async ({
   page,
 }) => {
   await home(page);
-  await press(page, "ArrowUp", "Enter", "Enter");
+  await press(page, "ArrowUp", "ArrowRight", "Enter", "Enter");
   await expect(page.getByRole("dialog")).toContainText("currently offline");
   await press(page, "Escape");
   await expect(

@@ -303,7 +303,7 @@ function selected() {
 }
 function header() {
   const c = clock();
-  return `<header class="home-header"><div class="time-block"><div class="clock" id="clock">${c.time}</div><div class="date" id="date">${c.date}</div></div><div class="greeting"><span id="greeting">${c.greeting}, ${esc(profiles[state.profile].name)}</span><span>Your world. A little closer.</span></div><div class="home-brand">${brand}</div><div class="controls">${["wifi", "search", "settings"].map((name, i) => `<button class="control ${state.zone === "controls" && state.control === i ? "focused" : ""}" data-control="${i}" aria-label="${name === "wifi" ? "Wi-Fi: " + (state.wifi ? "Connected" : "Offline") : name === "search" ? "Search" : "Settings"}" ${state.zone === "controls" && state.control === i ? 'data-active="true"' : ""}>${icon(name)}${name === "wifi" ? `<span class="status-dot ${!state.wifi ? "offline" : ""}"></span>` : ""}</button>`).join("")}<button class="mini-profile ${state.zone === "controls" && state.control === 3 ? "focused" : ""}" data-control="3" aria-label="Switch profile" ${state.zone === "controls" && state.control === 3 ? 'data-active="true"' : ""}>${esc(profiles[state.profile].name[0])}</button></div></header>`;
+  return `<header class="home-header"><div class="time-block"><div class="clock" id="clock">${c.time}</div><div class="date" id="date">${c.date}</div></div><div class="greeting"><span id="greeting">${c.greeting}, ${esc(profiles[state.profile].name)}</span><span>Your world. A little closer.</span></div><div class="home-brand">${brand}</div><div class="controls">${["search", "wifi", "settings"].map((name, i) => `<button class="control ${state.zone === "controls" && state.control === i ? "focused" : ""}" data-control="${i}" aria-label="${name === "wifi" ? "Wi-Fi: " + (state.wifi ? "Connected" : "Offline") : name === "search" ? "Search" : "Settings"}" ${state.zone === "controls" && state.control === i ? 'data-active="true"' : ""}>${icon(name)}${name === "wifi" ? `<span class="status-dot ${!state.wifi ? "offline" : ""}"></span>` : ""}</button>`).join("")}<button class="mini-profile ${state.zone === "controls" && state.control === 3 ? "focused" : ""}" data-control="3" aria-label="Switch profile" ${state.zone === "controls" && state.control === 3 ? 'data-active="true"' : ""}>${esc(profiles[state.profile].name[0])}</button></div></header>`;
 }
 function hero() {
   const x = selected();
@@ -536,7 +536,7 @@ function selectControl() {
     state.screen = "profiles";
     state.profileFocus = state.profile;
     render();
-  } else openModal(["wifi", "search", "settings"][state.control]);
+  } else openModal(["search", "wifi", "settings"][state.control]);
 }
 function typeKey(key) {
   const field = state.modal === "add" ? "addName" : "query";
