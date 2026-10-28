@@ -261,7 +261,6 @@ function clock() {
               : "Good night",
   };
 }
-const brand = `<div class="brand"><span class="brand-mark">a</span>aether<span class="brand-dot">TV</span></div>`;
 function remoteHint(extra = "") {
   return `<footer class="remote-hint"><span><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Navigate</span><span><kbd>↵</kbd> Select</span><span><kbd>esc</kbd> Back</span>${extra}<span class="prototype-label">INTERACTIVE DESIGN PROTOTYPE</span></footer>`;
 }
@@ -271,7 +270,7 @@ function profileButton(p, i) {
 function renderProfiles() {
   const c = clock();
   backdrop((profiles[state.profileFocus] || { art: "mountain" }).art);
-  return `<section class="profile-screen ${state.entering ? "entering" : ""}"><header class="profile-header">${brand}<span class="quiet-clock">${c.time}</span></header><div class="profile-intro"><p class="eyebrow">A SPACE FOR EVERY STORY</p><h1>Who's watching?</h1><p>Settle in. Make yourself at home.</p></div><div class="profiles">${[...profiles, { name: "Add Profile", color: "empty", symbol: "plus" }].map(profileButton).join("")}</div><div class="profile-bottom"><span class="tiny-spark">✧</span> One TV. A world for everyone.<p>Your favorites, your progress, your next great story.</p></div>${remoteHint()}</section>`;
+  return `<section class="profile-screen ${state.entering ? "entering" : ""}"><header class="profile-header"><span class="quiet-clock">${c.time}</span></header><div class="profile-intro"><p class="eyebrow">A SPACE FOR EVERY STORY</p><h1>Who's watching?</h1><p>Settle in. Make yourself at home.</p></div><div class="profiles">${[...profiles, { name: "Add Profile", color: "empty", symbol: "plus" }].map(profileButton).join("")}</div><div class="profile-bottom"><span class="tiny-spark">✧</span> One TV. A world for everyone.<p>Your favorites, your progress, your next great story.</p></div>${remoteHint()}</section>`;
 }
 function profileContent() {
   if (state.profile === 1)
@@ -303,7 +302,7 @@ function selected() {
 }
 function header() {
   const c = clock();
-  return `<header class="home-header"><div class="time-block"><div class="clock" id="clock">${c.time}</div><div class="date" id="date">${c.date}</div></div><div class="greeting"><span id="greeting">${c.greeting}, ${esc(profiles[state.profile].name)}</span><span>Your world. A little closer.</span></div><div class="home-brand">${brand}</div><div class="controls">${["search", "wifi", "settings"].map((name, i) => `<button class="control ${state.zone === "controls" && state.control === i ? "focused" : ""}" data-control="${i}" aria-label="${name === "wifi" ? "Wi-Fi: " + (state.wifi ? "Connected" : "Offline") : name === "search" ? "Search" : "Settings"}" ${state.zone === "controls" && state.control === i ? 'data-active="true"' : ""}>${icon(name)}${name === "wifi" ? `<span class="status-dot ${!state.wifi ? "offline" : ""}"></span>` : ""}</button>`).join("")}<button class="mini-profile ${state.zone === "controls" && state.control === 3 ? "focused" : ""}" data-control="3" aria-label="Switch profile" ${state.zone === "controls" && state.control === 3 ? 'data-active="true"' : ""}>${esc(profiles[state.profile].name[0])}</button></div></header>`;
+  return `<header class="home-header"><div class="time-block"><div class="clock" id="clock">${c.time}</div><div class="date" id="date">${c.date}</div></div><div class="greeting"><span id="greeting">${c.greeting}, ${esc(profiles[state.profile].name)}</span><span>Your world. A little closer.</span></div><div class="controls">${["search", "wifi", "settings"].map((name, i) => `<button class="control ${state.zone === "controls" && state.control === i ? "focused" : ""}" data-control="${i}" aria-label="${name === "wifi" ? "Wi-Fi: " + (state.wifi ? "Connected" : "Offline") : name === "search" ? "Search" : "Settings"}" ${state.zone === "controls" && state.control === i ? 'data-active="true"' : ""}>${icon(name)}${name === "wifi" ? `<span class="status-dot ${!state.wifi ? "offline" : ""}"></span>` : ""}</button>`).join("")}<button class="mini-profile ${state.zone === "controls" && state.control === 3 ? "focused" : ""}" data-control="3" aria-label="Switch profile" ${state.zone === "controls" && state.control === 3 ? 'data-active="true"' : ""}>${esc(profiles[state.profile].name[0])}</button></div></header>`;
 }
 function hero() {
   const x = selected();

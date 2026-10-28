@@ -103,31 +103,6 @@ button:focus-visible:not(.focused) {
   flex-shrink: 0;
   vertical-align: middle;
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 27px;
-  font-weight: 500;
-  letter-spacing: 2px;
-}
-.brand-mark {
-  font-family: Georgia, serif;
-  font-style: italic;
-  font-size: 46px;
-  line-height: 1;
-  letter-spacing: -6px;
-  margin-right: 11px;
-}
-.brand-dot {
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  align-self: center;
-  border: 1px solid #ffffff40;
-  border-radius: 5px;
-  padding: 3px 4px;
-  margin-left: 3px;
-}
 .eyebrow {
   font-size: 16px;
   letter-spacing: 4.5px;
@@ -148,7 +123,7 @@ button:focus-visible:not(.focused) {
   left: 90px;
   right: 90px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 .quiet-clock {
@@ -443,12 +418,6 @@ button:focus-visible:not(.focused) {
 .greeting > span:last-child {
   font-size: 16px;
   color: #97a5ad;
-}
-.home-brand {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0.9;
 }
 .controls {
   display: flex;
