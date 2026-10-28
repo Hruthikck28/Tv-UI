@@ -1633,3 +1633,55 @@ button:focus-visible:not(.focused) {
 .entering {
   transform: scale(1.06);
 }
+
+/* Context travels with each lower row instead of disappearing above the fold. */
+.row-preview {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  min-height: 116px;
+  padding: 19px 24px;
+  margin: 12px 4px 0 0;
+  border: 1px solid #ffffff12;
+  border-radius: 15px;
+  background: linear-gradient(120deg, #ffffff09, #ffffff03);
+  backdrop-filter: blur(18px);
+}
+.row-preview-title {
+  flex: 0 0 350px;
+}
+.row-preview h3 {
+  margin: 0 0 9px;
+  font-size: 27px;
+  font-weight: 400;
+  letter-spacing: -0.4px;
+}
+.row-preview-title p {
+  margin: 0;
+  color: #a9bbc7;
+  font-size: 16px;
+}
+.row-preview-description {
+  margin: 0;
+  color: #bdcbd3;
+  font-size: 19px;
+  line-height: 1.5;
+  max-width: 850px;
+}
+.row-preview-action {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: #cad8df;
+  font-size: 16px;
+}
+.row-preview-action kbd {
+  font-family: inherit;
+  border: 1px solid #ffffff35;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin-right: 7px;
+}
+.current-row .row-preview {
+  border-color: #ffffff28;
+  background: linear-gradient(120deg, #ffffff10, #ffffff05);
+}

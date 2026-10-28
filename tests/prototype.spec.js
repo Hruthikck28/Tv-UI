@@ -293,3 +293,99 @@ test("zoom is reserved for profile selection, not navigation focus", async ({
   await press(page, "ArrowUp");
   await expect(page.locator(".control.focused")).toHaveCSS("transform", "none");
 });
+
+test("each row remembers its focused card and horizontal position", async ({
+  page,
+}) => {
+  await home(page);
+  await press(page, "ArrowRight", "ArrowRight", "ArrowDown");
+  for (let i = 0; i < 6; i++) await press(page, "ArrowRight");
+  await press(
+    page,
+    "ArrowDown",
+    "ArrowRight",
+    "ArrowDown",
+    "ArrowRight",
+    "ArrowUp",
+  );
+  await expect(page.locator(".content-card.focused")).toContainText(
+    "Wild North",
+  );
+  await press(page, "ArrowUp");
+  await expect(
+    page.getByRole("button", { name: "Open Sony LIV", exact: true }),
+  ).toBeFocused();
+  await expect(page.locator(".app-card.focused")).toBeInViewport();
+  await press(page, "ArrowUp");
+  await expect(page.locator(".content-card.focused")).toContainText(
+    "Beyond Earth",
+  );
+});
+
+test("background previews wait for settled focus and cancel stale selections", async ({
+  page,
+}) => {
+  await home(page);
+  await page.clock.install({ time: new Date("2026-10-28T12:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-28T12:00:01Z"));
+  await press(page, "ArrowRight");
+  await page.clock.runFor(200);
+  await expect(page.locator(".backdrop").last()).toHaveCSS(
+    "background-image",
+    /mountain/,
+  );
+  await press(page, "ArrowRight");
+  await page.clock.runFor(299);
+  await expect(page.locator(".backdrop").last()).toHaveCSS(
+    "background-image",
+    /mountain/,
+  );
+  await page.clock.runFor(1);
+  await expect(page.locator(".backdrop").last()).toHaveCSS(
+    "background-image",
+    /city/,
+  );
+  await press(page, "ArrowRight", "Escape");
+  await page.clock.runFor(400);
+  await expect(page.locator(".backdrop").last()).toHaveCSS(
+    "background-image",
+    /mountain/,
+  );
+});
+
+test("lower rows keep selected content details in view", async ({ page }) => {
+  await home(page);
+  await press(page, "ArrowDown", "ArrowRight");
+  await expect(page.locator(".current-row .row-preview h3")).toHaveText(
+    "Prime Video",
+  );
+  await expect(page.locator(".current-row .row-preview")).toBeInViewport({
+    ratio: 1,
+  });
+  await press(page, "ArrowDown");
+  await expect(page.locator(".current-row .row-preview")).toContainText(
+    "Prime Video · Science",
+  );
+  await press(page, "ArrowDown", "ArrowRight");
+  await expect(page.locator(".current-row .row-preview h3")).toHaveText(
+    "Tides",
+  );
+  await expect(
+    page.locator(".current-row .row-preview-description"),
+  ).toContainText("Find your flow");
+  await expect(page.locator(".current-row .row-preview")).toBeInViewport({
+    ratio: 1,
+  });
+  await page.screenshot({ path: "test-results/lower-row-details.png" });
+});
+
+
+test('row focus stays separate for each profile',async({page})=>{
+ await home(page);
+ await press(page,'ArrowRight','ArrowRight','Escape','ArrowRight','Enter');
+ await expect(page.locator('.home-screen')).toBeVisible();
+ await expect(page.locator('.content-card.focused')).toContainText('The Blue Hours');
+ await press(page,'Escape','ArrowLeft','Enter');
+ await expect(page.locator('.home-screen')).toBeVisible();
+ await expect(page.locator('.content-card.focused')).toContainText('Beyond Earth');
+});

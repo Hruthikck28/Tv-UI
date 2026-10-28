@@ -194,6 +194,8 @@ let bg = "",
   toastTimer,
   transitionTimer,
   backgroundTimer,
+  previewTimer,
+  pendingPreview = null,
   modalReturn = null,
   detailOrigin = null;
 const app = document.querySelector("#app");
@@ -220,6 +222,35 @@ function backdrop(name) {
   backgroundTimer = setTimeout(() => {
     while (box.children.length > 1) box.firstElementChild.remove();
   }, 950);
+}
+// Keep focus history separate for each viewer for the current session.
+const rowFocus = new Map();
+function rememberedRows() {
+  if (!rowFocus.has(state.profile)) rowFocus.set(state.profile, [0, 0, 0, 0]);
+  return rowFocus.get(state.profile);
+}
+function cancelPreview() {
+  clearTimeout(previewTimer);
+  pendingPreview = null;
+}
+function queuePreview(name) {
+  if (state.modal || state.zone !== "rail" || name === bg) {
+    cancelPreview();
+    return;
+  }
+  if (pendingPreview === name) return;
+  cancelPreview();
+  pendingPreview = name;
+  previewTimer = setTimeout(() => {
+    pendingPreview = null;
+    if (
+      state.screen === "home" &&
+      !state.modal &&
+      state.zone === "rail" &&
+      selected().art === name
+    )
+      backdrop(name);
+  }, 300);
 }
 function save() {
   try {
@@ -268,6 +299,7 @@ function profileButton(p, i) {
   return `<button class="profile ${state.profileFocus === i ? "focused" : ""} ${state.entering && state.profileFocus === i ? "selected" : ""}" data-profile="${i}" aria-label="${esc(p.name)}" ${state.profileFocus === i ? 'data-active="true"' : ""}><span class="orb ${p.color}"><span class="orb-art"></span><span class="avatar-symbol">${icons[p.symbol] ? icon(p.symbol) : esc(p.symbol)}</span><span class="orb-reflection"></span><span class="orbit-shine"></span></span><span class="profile-name">${esc(p.name)}</span><span class="profile-caption">${i === profiles.length ? "Make it yours" : i === 2 ? "A little of everything" : "Your own little universe"}</span></button>`;
 }
 function renderProfiles() {
+  cancelPreview();
   const c = clock();
   backdrop((profiles[state.profileFocus] || { art: "mountain" }).art);
   return `<section class="profile-screen ${state.entering ? "entering" : ""}"><header class="profile-header"><span class="quiet-clock">${c.time}</span></header><div class="profile-intro"><p class="eyebrow">A SPACE FOR EVERY STORY</p><h1>Who's watching?</h1><p>Settle in. Make yourself at home.</p></div><div class="profiles">${[...profiles, { name: "Add Profile", color: "empty", symbol: "plus" }].map(profileButton).join("")}</div><div class="profile-bottom"><span class="tiny-spark">✧</span> One TV. A world for everyone.<p>Your favorites, your progress, your next great story.</p></div>${remoteHint()}</section>`;
@@ -317,8 +349,20 @@ function card(x, i, section) {
     return `<button class="app-card ${x.class} ${active ? "focused" : ""}" data-card="${i}" data-row="${section}" aria-label="Open ${x.name}" ${active ? 'data-active="true"' : ""}><span class="app-logo">${x.class === "youtube" ? '<span class="youtube-play">▶</span>' : x.class === "apple" ? '<span class="apple-dot">●</span>' : ""}${x.logo}</span><span class="tile-shine"></span><span class="app-caption">${x.name}</span></button>`;
   return `<button class="content-card ${active ? "focused" : ""}" data-card="${i}" data-row="${section}" aria-label="${esc(x.short)}${x.progress ? ", " + x.progress + "% watched" : ""}" ${active ? 'data-active="true"' : ""}><div class="card-image" style="background-image:url('${art(x.art)}')"><span class="card-provider">${x.provider === "Games" ? icon("game") : x.provider}</span><div class="card-art-title ${x.id === "orbit" || x.id === "lunar" ? "spaced" : ""}">${x.short}</div><span class="tile-shine"></span>${section === 0 ? `<div class="progress-track"><span style="width:${x.progress}%"></span></div>` : ""}<span class="card-play">${icon(section === 3 ? "game" : "play")}</span></div><div class="card-info"><span>${x.short}</span><span>${section === 0 ? x.left : section === 3 ? "Play now" : x.provider}</span></div><div class="card-subtitle">${section === 0 ? x.episode : x.genre}</div></button>`;
 }
+function rowPreview(section, index) {
+  const x = items(section)[index];
+  const isApp = section === 1;
+  const title = isApp ? x.name : x.short;
+  const metadata = isApp
+    ? "Pinned app · Shared account"
+    : `${x.provider} · ${x.genre}${x.rating ? " · " + x.rating : ""}`;
+  const description = isApp
+    ? `Explore ${x.name} with the same account on every profile. Your next favorite story is waiting.`
+    : x.desc;
+  return `<div class="row-preview"><div class="row-preview-title"><h3>${esc(title)}</h3><p>${esc(metadata)}</p></div><p class="row-preview-description">${esc(description)}</p><span class="row-preview-action"><kbd>↵</kbd> ${isApp ? "Open app" : section === 3 ? "Play preview" : "View details"}</span></div>`;
+}
 function renderHome() {
-  backdrop(selected().art);
+  queuePreview(selected().art);
   const descriptions = [
     "Pick up where you left off",
     "Pinned for everyone",
@@ -327,12 +371,12 @@ function renderHome() {
   ];
   return `<section class="home-screen">${header()}<div class="home-feed" aria-label="Home content"><div class="hero-area">${hero()}</div>${sections
     .map((name, section) => {
-      const index = state.section === section ? state.index : 0;
+      const index = rememberedRows()[section];
       const shift =
         section === 1
           ? Math.max(0, index - 5) * 250
           : Math.max(0, index - 2) * 445;
-      return `<section class="shelf ${state.section === section ? "current-row" : ""}" data-shelf="${section}" aria-labelledby="section-${section}"><div class="section-heading"><h2 id="section-${section}">${name}</h2><span class="shelf-context">${descriptions[section]}</span></div><div class="rail-viewport"><div class="rail ${section === 1 ? "apps-rail" : ""}" style="transform:translateX(-${shift}px)">${items(
+      return `<section class="shelf ${state.section === section ? "current-row" : ""}" data-shelf="${section}" aria-labelledby="section-${section}"><div class="section-heading"><h2 id="section-${section}">${name}</h2><span class="shelf-context">${descriptions[section]}</span></div>${section > 0 ? rowPreview(section, index) : ""}<div class="rail-viewport"><div class="rail ${section === 1 ? "apps-rail" : ""}" style="transform:translateX(-${shift}px)">${items(
         section,
       )
         .map((x, i) => card(x, i, section))
@@ -431,6 +475,7 @@ function modal() {
   return `<div class="modal-backdrop"><section class="modal ${state.modal}-modal" role="dialog" aria-modal="true" aria-label="${state.modal === "detail" || state.modal === "player" ? esc(state.detail.short) : heading}" tabindex="-1"><button class="modal-back" data-close aria-label="Back">${icon("back")}<span>Back</span><kbd>esc</kbd></button>${body}</section></div>`;
 }
 function render(ensureVisible = false) {
+  if (state.screen === "home") rememberedRows()[state.section] = state.index;
   const scrollTop = app.querySelector(".home-feed")?.scrollTop || 0;
   document
     .querySelector("#stage")
@@ -447,7 +492,7 @@ function render(ensureVisible = false) {
       const row = feed.querySelector(`[data-shelf="${state.section}"]`);
       const top = row.offsetTop;
       const bottom = top + row.offsetHeight;
-      if (state.zone === "controls")
+      if (state.zone === "controls" || state.section === 0)
         feed.scrollTo({
           top: 0,
           behavior: state.reduced ? "instant" : "smooth",
@@ -508,7 +553,7 @@ function enterProfile() {
       state.entering = false;
       state.screen = "home";
       state.section = 0;
-      state.index = 0;
+      state.index = rememberedRows()[0];
       state.zone = "rail";
       state.modal = null;
       render();
@@ -834,12 +879,12 @@ addEventListener("keydown", (e) => {
       if (state.section === 0) state.zone = "controls";
       else {
         state.section--;
-        state.index = 0;
+        state.index = rememberedRows()[state.section];
       }
     }
     if (key === "ArrowDown" && state.section < 3) {
       state.section++;
-      state.index = 0;
+      state.index = rememberedRows()[state.section];
     }
     if (key === "Enter") {
       selectCard();

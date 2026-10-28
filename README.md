@@ -80,3 +80,6 @@ npx vercel --prod
 Sign in through the browser when prompted. Choose your personal Vercel account, create a new project, and accept the detected Vite settings. `vercel.json` sets the build command to `npm run build` and the output directory to `dist`. No environment variables are needed. The CLI prints the deployed website URL to share with friends. If Vercel asks visitors to log in, check the project's Deployment Protection settings to allow public access as intended.
 
 This route uploads directly to Vercel and does not require a GitHub push. Codex environment publication is separate from website deployment.
+
+
+Home remembers the last focused item and horizontal position in each row, separately for each profile during the current session. Background previews wait 300 ms for focus to settle, so rapid navigation skips intermediate artwork. Lower sections include an always-visible compact title, provider/genre, description, and action hint beside the row. Focus and text respond immediately; only the background preview is delayed.
